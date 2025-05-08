@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤقت بومودورو</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 28px;
+        }
+
+        #settings {
+            margin: 20px auto;
+            padding: 10px;
+            max-width: 400px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #settings label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 18px;
+        }
+
+        #settings input {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        #settings button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #settings button:hover {
+            background-color: #45a049;
+        }
+
+        #timer {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+
+        #status, #cycles {
+            font-size: 20px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .controls button {
+            flex: 1 1 140px;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background-color: #1976D2;
+        }
+
+        @media (max-width: 480px) {
+            #timer {
+                font-size: 40px;
+            }
+
+            .controls button {
+                font-size: 16px;
+                padding: 10px;
+            }
+
+            #settings label, #settings input, #status, #cycles {
+                font-size: 16px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🕒 مؤقت بومودورو</h1>
+
+    <div id="settings">
+        <label>⏳ وقت العمل (دقائق)</label>
+        <input type="number" id="workInput" value="25" min="1">
+
+        <label>☕ وقت الاستراحة (دقائق)</label>
+        <input type="number" id="breakInput" value="5" min="1">
+
+        <button onclick="updateSettings()">حفظ الإعدادات</button>
+    </div>
+
+    <p id="status">🚀 وقت العمل</p>
+    <div id="timer">25:00</div>
+    <p>🔄 الدورات المكتملة: <span id="cycles">0</span></p>
+
+    <div class="controls">
+        <button onclick="startTimer()">ابدأ</button>
+        <button onclick="pauseTimer()">إيقاف مؤقت</button>
+        <button onclick="resetTimer()">إعادة ضبط</button>
+        <button onclick="stopAlarm()">ايقاف الصوت</button>
+    </div>
+
+    <audio id="alarmSound" src="../ملف الصوت/m.m4a"></audio>
+
+    <script>
+        let workTime = 25 * 60;
+        let breakTime = 5 * 60;
+        let timeLeft = workTime;
+        let isWorking = true;
+        let timer;
+        let isRunning = false;
+        let cyclesCompleted = 0;
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timer = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        playAlarm();
+                        switchMode();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            isWorking = true;
+            timeLeft = workTime;
+            cyclesCompleted = 0;
+            document.getElementById("cycles").innerText = cyclesCompleted;
+            document.getElementById("status").innerText = "🚀 وقت العمل";
+            updateDisplay();
+        }
+
+        function switchMode() {
+            clearInterval(timer);
+            isRunning = false;
+            isWorking = !isWorking;
+            timeLeft = isWorking ? workTime : breakTime;
+
+            document.getElementById("status").innerText = isWorking ? "🚀 وقت العمل" : "☕ وقت الاستراحة";
+
+            if (isWorking) {
+                cyclesCompleted++;
+                document.getElementById("cycles").innerText = cyclesCompleted;
+            }
+
+            updateDisplay();
+            startTimer();
+        }
+
+        function updateDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById("timer").innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function playAlarm() {
+            let alarm = document.getElementById("alarmSound");
+            alarm.currentTime = 0;
+            alarm.play();
+        }
+
+        function stopAlarm() {
+            let alarm = document.getElementById("alarmSound");
+            alarm.pause();
+            alarm.currentTime = 0;
+        }
+
+        function updateSettings() {
+            pauseTimer();
+            let newWorkTime = parseInt(document.getElementById("workInput").value);
+            let newBreakTime = parseInt(document.getElementById("breakInput").value);
+
+            if (newWorkTime > 0 && newBreakTime > 0) {
+                workTime = newWorkTime * 60;
+                breakTime = newBreakTime * 60;
+                timeLeft = workTime;
+                isWorking = true;
+                document.getElementById("status").innerText = "🚀 وقت العمل";
+                updateDisplay();
+            } else {
+                alert("الرجاء إدخال قيم صحيحة (أكبر من 0)!");
+            }
+        }
+    </script>
+
+</body>
+</html>

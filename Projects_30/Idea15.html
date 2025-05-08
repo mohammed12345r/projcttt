@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌡️ محول درجات الحرارة</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 10px;
+      background-color: #f4f4f4;
+      transition: background-color 0.5s ease;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .input-group {
+      margin: 10px 0;
+      text-align: right;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #dc3545;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      width: 100%;
+    }
+
+    /* استجابة لأحجام الشاشات الصغيرة */
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 1.2em;
+      }
+
+      input, button {
+        font-size: 0.95em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌡️ محول درجات الحرارة</h1>
+
+    <div class="input-group">
+      <label for="celsius">درجة الحرارة بالسيلسيوس (°C):</label>
+      <input type="number" id="celsius" step="0.01">
+    </div>
+
+    <div class="input-group">
+      <label for="fahrenheit">درجة الحرارة بالفهرنهايت (°F):</label>
+      <input type="number" id="fahrenheit" step="0.01">
+    </div>
+
+    <div class="input-group">
+      <label for="kelvin">درجة الحرارة بالكلفن (K):</label>
+      <input type="number" id="kelvin" step="0.01">
+    </div>
+
+    <div class="input-group">
+      <label for="rankine">درجة الحرارة بالرانكين (°R):</label>
+      <input type="number" id="rankine" step="0.01">
+    </div>
+
+    <button id="reset">إعادة تعيين</button>
+  </div>
+
+  <script>
+    const celsiusInput = document.getElementById("celsius");
+    const fahrenheitInput = document.getElementById("fahrenheit");
+    const kelvinInput = document.getElementById("kelvin");
+    const rankineInput = document.getElementById("rankine");
+    const resetButton = document.getElementById("reset");
+
+    function round(value) {
+      return Math.round(value * 100) / 100;
+    }
+
+    function updateBackground(tempCelsius) {
+      let color;
+      if (tempCelsius <= 0 ) {
+        color = "#00BFFF";
+      } else if (tempCelsius <= 20) {
+        color = "#87CEEB";
+      } else if (tempCelsius <= 30) {
+        color = "#FFD700";
+      } else if (tempCelsius <= 40) {
+        color = "#FF8C00";
+      } else {
+        color = "#FF4500";
+      }
+      document.body.style.backgroundColor = color;
+    }
+
+    celsiusInput.addEventListener("input", () => {
+      let celsius = parseFloat(celsiusInput.value);
+      if (!isNaN(celsius)) {
+        fahrenheitInput.value = round((celsius * 9 / 5) + 32);
+        kelvinInput.value = round(celsius + 273.15);
+        rankineInput.value = round((celsius + 273.15) * 9 / 5);
+        updateBackground(celsius);
+        saveToLocalStorage();
+      } else {
+        clearFields();
+      }
+    });
+
+    fahrenheitInput.addEventListener("input", () => {
+      let fahrenheit = parseFloat(fahrenheitInput.value);
+      if (!isNaN(fahrenheit)) {
+        celsiusInput.value = round((fahrenheit - 32) * 5 / 9);
+        kelvinInput.value = round(((fahrenheit - 32) * 5 / 9) + 273.15);
+        rankineInput.value = round(fahrenheit + 459.67);
+        updateBackground(parseFloat(celsiusInput.value));
+        saveToLocalStorage();
+      } else {
+        clearFields();
+      }
+    });
+
+    kelvinInput.addEventListener("input", () => {
+      let kelvin = parseFloat(kelvinInput.value);
+      if (!isNaN(kelvin)) {
+        celsiusInput.value = round(kelvin - 273.15);
+        fahrenheitInput.value = round(((kelvin - 273.15) * 9 / 5) + 32);
+        rankineInput.value = round(kelvin * 9 / 5);
+        updateBackground(parseFloat(celsiusInput.value));
+        saveToLocalStorage();
+      } else {
+        clearFields();
+      }
+    });
+
+    rankineInput.addEventListener("input", () => {
+      let rankine = parseFloat(rankineInput.value);
+      if (!isNaN(rankine)) {
+        celsiusInput.value = round((rankine - 491.67) * 5 / 9);
+        fahrenheitInput.value = round(rankine - 459.67);
+        kelvinInput.value = round(rankine * 5 / 9);
+        updateBackground(parseFloat(celsiusInput.value));
+        saveToLocalStorage();
+      } else {
+        clearFields();
+      }
+    });
+
+    resetButton.addEventListener("click", () => {
+      clearFields();
+      localStorage.clear();
+      document.body.style.backgroundColor = "#f4f4f4";
+    });
+
+    function clearFields() {
+      celsiusInput.value = "";
+      fahrenheitInput.value = "";
+      kelvinInput.value = "";
+      rankineInput.value = "";
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem("temperature", JSON.stringify({
+        celsius: celsiusInput.value,
+        fahrenheit: fahrenheitInput.value,
+        kelvin: kelvinInput.value,
+        rankine: rankineInput.value
+      }));
+    }
+
+    window.addEventListener("load", () => {
+      let savedData = JSON.parse(localStorage.getItem("temperature"));
+      if (savedData) {
+        celsiusInput.value = savedData.celsius;
+        fahrenheitInput.value = savedData.fahrenheit;
+        kelvinInput.value = savedData.kelvin;
+        rankineInput.value = savedData.rankine;
+        updateBackground(parseFloat(savedData.celsius));
+      }
+    });
+  </script>
+</body>
+</html>

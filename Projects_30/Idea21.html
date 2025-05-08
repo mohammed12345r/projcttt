@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📝 تطبيق الاختبار</title>
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --container-bg: #fff;
+      --button-bg: #3498db;
+      --button-hover: #2980b9;
+      --button-text: #fff;
+      --box-shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #f0f0f0;
+      --container-bg: #2b2b2b;
+      --button-bg: #555;
+      --button-hover: #777;
+      --button-text: #fff;
+      --box-shadow: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .quiz-container {
+      background: var(--container-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px var(--box-shadow);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    #toggleMode {
+      margin-top: 15px;
+      background-color: #888;
+    }
+
+    @media (max-width: 480px) {
+      .question {
+        font-size: 18px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+
+      .quiz-container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    <h1>اختبار متعدد الاختيارات</h1>
+
+    <div id="questionContainer"></div>
+
+    <div id="result" class="result">
+      <p>نقاطك: <span id="score">0</span></p>
+    </div>
+
+    <button id="nextButton" disabled>التالي</button>
+    <button id="toggleMode">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "ما هو أكبر كوكب في النظام الشمسي؟",
+        options: ["الأرض", "المشتري", "الزهرة", "المريخ"],
+        correct: 1
+      },
+      {
+        question: "ما هي عاصمة فرنسا؟",
+        options: ["مدريد", "باريس", "لندن", "برلين"],
+        correct: 1
+      },
+      {
+        question: "ما هو أطول نهر في العالم؟",
+        options: ["النيل", "الأمازون", "اليانغتسي", "الغانج"],
+        correct: 0
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionContainer = document.getElementById("questionContainer");
+    const nextButton = document.getElementById("nextButton");
+    const scoreDisplay = document.getElementById("score");
+    const resultDisplay = document.getElementById("result");
+
+    function loadQuestion() {
+      const current = questions[currentQuestionIndex];
+      questionContainer.innerHTML = `
+        <div class="question">${current.question}</div>
+        ${current.options.map((opt, idx) => `
+          <button onclick="checkAnswer(${idx})">${opt}</button>
+        `).join('')}
+      `;
+      nextButton.disabled = true;
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[currentQuestionIndex].correct;
+      if (selected === correct) score++;
+      scoreDisplay.textContent = score;
+      disableButtons();
+      nextButton.disabled = false;
+    }
+
+    function disableButtons() {
+      const buttons = questionContainer.querySelectorAll("button");
+      buttons.forEach(btn => btn.disabled = true);
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        resultDisplay.innerHTML = `<p>الاختبار انتهى! نقاطك: <span>${score}</span> من ${questions.length}</p>`;
+        nextButton.style.display = "none";
+      }
+    }
+
+    nextButton.addEventListener("click", nextQuestion);
+
+    // الوضع الليلي
+    const toggleMode = document.getElementById("toggleMode");
+    toggleMode.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("dark-mode-enabled", document.body.classList.contains("dark-mode"));
+    });
+
+    // تحميل الوضع المحفوظ
+    window.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("dark-mode-enabled") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+      loadQuestion();
+    });
+  </script>
+
+</body>
+</html>

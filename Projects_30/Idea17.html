@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🕒 الساعة الرقمية</title>
+  <style>
+    :root {
+      --bg: #616d84;
+      --clock-bg: rgb(105, 130, 128);
+      --text-color: white;
+    }
+
+    body.dark-mode {
+      --bg: #121212;
+      --clock-bg: #1f2a30;
+      --text-color: #f0f0f0;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .clock-container {
+      text-align: center;
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .digital-clock {
+      font-size: 60px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      background-color: var(--clock-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      transition: background-color 0.3s;
+    }
+
+    #toggleDarkMode {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      .digital-clock {
+        font-size: 40px;
+        padding: 15px;
+      }
+
+      #toggleDarkMode {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clock-container">
+    <div id="digitalClock" class="digital-clock">00:00:00</div>
+    <button id="toggleDarkMode">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    function updateClock() {
+      const clockElement = document.getElementById("digitalClock");
+      const now = new Date();
+      let hours = now.getHours().toString().padStart(2, "0");
+      let minutes = now.getMinutes().toString().padStart(2, "0");
+      let seconds = now.getSeconds().toString().padStart(2, "0");
+      clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // الوضع الليلي
+    const toggleBtn = document.getElementById("toggleDarkMode");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    });
+
+    // تحميل الوضع الليلي من التخزين المحلي
+    window.addEventListener("DOMContentLoaded", () => {
+      const dark = localStorage.getItem("darkMode") === "true";
+      if (dark) document.body.classList.add("dark-mode");
+    });
+  </script>
+</body>
+</html>

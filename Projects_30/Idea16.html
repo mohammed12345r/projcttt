@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📋 قائمة المهام</title>
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --container-bg: white;
+      --text-color: black;
+      --task-bg: #eee;
+      --task-complete: #d3d3d3;
+    }
+
+    body.dark-mode {
+      --bg: #121212;
+      --container-bg: #1e1e1e;
+      --text-color: #f0f0f0;
+      --task-bg: #333;
+      --task-complete: #444;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-color);
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: var(--container-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+      transition: background-color 0.3s;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #addTask {
+      background-color: #28a745;
+      color: white;
+    }
+
+    #clearTasks {
+      background-color: #dc3545;
+      color: white;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: var(--task-bg);
+      padding: 10px;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+      background: var(--task-complete);
+    }
+
+    li.removing {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    #toggleDarkMode {
+      background-color: #007bff;
+      color: white;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    @media (max-width: 400px) {
+      .input-group {
+        flex-direction: column;
+      }
+
+      input, button {
+        width: 100%;
+      }
+
+      .delete-btn {
+        padding: 4px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>📋 قائمة المهام</h1>
+
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="أضف مهمة جديدة..." />
+      <button id="addTask">إضافة</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <button id="clearTasks">مسح جميع المهام</button>
+    <button id="toggleDarkMode">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById("taskInput");
+    const addTaskButton = document.getElementById("addTask");
+    const taskList = document.getElementById("taskList");
+    const clearTasksButton = document.getElementById("clearTasks");
+    const toggleDarkModeButton = document.getElementById("toggleDarkMode");
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTasks();
+      loadDarkMode();
+    });
+
+    addTaskButton.addEventListener("click", () => {
+      const taskText = taskInput.value.trim();
+      if (taskText !== "") {
+        addTaskToList(taskText);
+        saveTasks();
+        taskInput.value = "";
+      }
+    });
+
+    function addTaskToList(taskText, completed = false) {
+      const li = document.createElement("li");
+      li.textContent = taskText;
+      if (completed) li.classList.add("completed");
+
+      li.addEventListener("click", () => {
+        li.classList.toggle("completed");
+        saveTasks();
+        sortTasks();
+      });
+
+      li.addEventListener("dblclick", () => editTask(li));
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "❌";
+      deleteBtn.classList.add("delete-btn");
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removeTask(li);
+      });
+
+      li.appendChild(deleteBtn);
+      taskList.appendChild(li);
+      sortTasks();
+    }
+
+    function saveTasks() {
+      const tasks = [];
+      document.querySelectorAll("#taskList li").forEach((li) => {
+        tasks.push({ text: li.textContent.replace("❌", "").trim(), completed: li.classList.contains("completed") });
+      });
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks.forEach((task) => addTaskToList(task.text, task.completed));
+    }
+
+    function removeTask(taskItem) {
+      taskItem.classList.add("removing");
+      setTimeout(() => {
+        taskItem.remove();
+        saveTasks();
+      }, 300);
+    }
+
+    function sortTasks() {
+      const tasks = Array.from(taskList.children);
+      tasks.sort((a, b) => a.classList.contains("completed") - b.classList.contains("completed"));
+      tasks.forEach((task) => taskList.appendChild(task));
+    }
+
+    function editTask(taskItem) {
+      const oldText = taskItem.textContent.replace("❌", "").trim();
+      const newText = prompt("تعديل المهمة:", oldText);
+      if (newText !== null && newText.trim() !== "") {
+        taskItem.childNodes[0].nodeValue = newText.trim();
+        saveTasks();
+      }
+    }
+
+    clearTasksButton.addEventListener("click", () => {
+      taskList.innerHTML = "";
+      localStorage.removeItem("tasks");
+    });
+
+    // الوضع الليلي
+    toggleDarkModeButton.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    });
+
+    function loadDarkMode() {
+      const dark = localStorage.getItem("darkMode") === "true";
+      if (dark) {
+        document.body.classList.add("dark-mode");
+      }
+    }
+  </script>
+</body>
+</html>

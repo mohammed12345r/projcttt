@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔢 عد الكلمات والحروف</title>
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --container-bg: #ffffff;
+      --text-color: #333;
+      --box-shadow: rgba(0, 0, 0, 0.1);
+      --input-border: #ccc;
+      --button-bg: #3498db;
+      --button-text: #fff;
+    }
+
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --container-bg: #2b2b2b;
+      --text-color: #f0f0f0;
+      --box-shadow: rgba(255, 255, 255, 0.1);
+      --input-border: #555;
+      --button-bg: #444;
+      --button-text: #fff;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: var(--container-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px var(--box-shadow);
+      width: 90%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      resize: none;
+      text-align: right;
+      background-color: inherit;
+      color: inherit;
+    }
+
+    .results {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: right;
+    }
+
+    .results p {
+      margin: 5px 0;
+    }
+
+    .toggle-btn {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .toggle-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      textarea {
+        font-size: 15px;
+        height: 100px;
+      }
+
+      .results {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>حاسبة عدد الكلمات والحروف</h1>
+
+    <textarea id="textInput" placeholder="أدخل نص هنا..." rows="8"></textarea>
+
+    <div class="results">
+      <p>عدد الكلمات: <span id="wordCount">0</span></p>
+      <p>عدد الحروف: <span id="charCount">0</span></p>
+    </div>
+
+    <button class="toggle-btn" id="toggleMode">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    const textInput = document.getElementById("textInput");
+    const wordCountDisplay = document.getElementById("wordCount");
+    const charCountDisplay = document.getElementById("charCount");
+    const toggleModeBtn = document.getElementById("toggleMode");
+
+    // تحديث عدد الكلمات والحروف
+    function updateCount() {
+      const text = textInput.value.trim();
+      const words = text.split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+      const charCount = text.replace(/\s+/g, '').length;
+
+      wordCountDisplay.textContent = wordCount;
+      charCountDisplay.textContent = charCount;
+    }
+
+    // تبديل الوضع الليلي
+    toggleModeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("dark-mode-enabled", document.body.classList.contains("dark-mode"));
+    });
+
+    // تحميل التفضيل من التخزين
+    window.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("dark-mode-enabled") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+    });
+
+    // تحديث العد عند الكتابة
+    textInput.addEventListener("input", updateCount);
+  </script>
+
+</body>
+</html>

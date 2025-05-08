@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💱 محول العملات</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .converter-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 340px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    input, select {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #toggleDarkMode {
+      background-color: #34495e;
+      margin-top: 10px;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+
+    .dark-mode .converter-container {
+      background: #1e1e1e;
+      color: #f0f0f0;
+    }
+
+    .dark-mode input,
+    .dark-mode select {
+      background-color: #333;
+      color: white;
+      border-color: #666;
+    }
+
+    @media (max-width: 400px) {
+      input, select {
+        font-size: 14px;
+        padding: 8px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="converter-container">
+    <h2>💱 محول العملات</h2>
+    <div class="input-group">
+      <input type="number" id="amount" placeholder="أدخل المبلغ" />
+      <select id="fromCurrency"></select>
+      <span>⇄</span>
+      <select id="toCurrency"></select>
+    </div>
+    <button onclick="convertCurrency()">تحويل</button>
+    <button id="toggleDarkMode" onclick="toggleDarkMode()">الوضع الليلي</button>
+    <h3 id="result">النتيجة ستظهر هنا</h3>
+  </div>
+
+  <script>
+    const apiKey = "7bff8ade59a160854bd50878"; // استبدل هذا بمفتاح API الخاص بك
+    const apiURL = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
+
+    const fromCurrency = document.getElementById("fromCurrency");
+    const toCurrency = document.getElementById("toCurrency");
+    const amount = document.getElementById("amount");
+    const result = document.getElementById("result");
+
+    async function loadCurrencies() {
+      try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        const currencies = Object.keys(data.conversion_rates);
+        currencies.forEach(currency => {
+          let option1 = document.createElement("option");
+          let option2 = document.createElement("option");
+
+          option1.value = option2.value = currency;
+          option1.textContent = option2.textContent = currency;
+
+          fromCurrency.appendChild(option1);
+          toCurrency.appendChild(option2);
+        });
+
+        fromCurrency.value = "USD";
+        toCurrency.value = "EUR";
+      } catch (error) {
+        console.error("خطأ في جلب البيانات:", error);
+        result.textContent = "⚠️ حدث خطأ في جلب أسعار الصرف.";
+      }
+    }
+
+    async function convertCurrency() {
+      const amountValue = parseFloat(amount.value);
+      if (isNaN(amountValue) || amountValue <= 0) {
+        result.textContent = "⚠️ يرجى إدخال مبلغ صالح.";
+        return;
+      }
+
+      try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+        const rate = data.conversion_rates[toCurrency.value] / data.conversion_rates[fromCurrency.value];
+        const convertedAmount = (amountValue * rate).toFixed(2);
+
+        result.textContent = `💰 ${amountValue} ${fromCurrency.value} = ${convertedAmount} ${toCurrency.value}`;
+      } catch (error) {
+        console.error("خطأ في التحويل:", error);
+        result.textContent = "⚠️ تعذر إجراء التحويل.";
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    loadCurrencies();
+  </script>
+</body>
+</html>

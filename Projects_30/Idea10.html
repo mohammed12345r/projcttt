@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محدد الجملة العكسية</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: block;
+            color: #444;
+        }
+
+        input {
+            font-size: 16px;
+            padding: 10px;
+            width: 100%;
+            max-width: 100%;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #5c6bc0;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #3f51b5;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            label, button, input {
+                font-size: 16px;
+            }
+
+            #result {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>تحقق من الجملة العكسية (Palindrome Checker)</h1>
+
+        <label for="inputText">أدخل الكلمة أو العبارة:</label>
+        <input type="text" id="inputText" placeholder="أدخل كلمة أو عبارة">
+        
+        <button onclick="checkPalindrome()">تحقق</button>
+
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function checkPalindrome() {
+            let inputText = document.getElementById("inputText").value;
+            let cleanedText = inputText.replace(/[^a-zA-Z0-9أ-ي]/g, '').toLowerCase();
+            let reversedText = cleanedText.split('').reverse().join('');
+            let result = document.getElementById("result");
+
+            if (cleanedText === reversedText) {
+                result.textContent = "نعم، هي جملة عكسية!";
+                result.style.color = "green";
+            } else {
+                result.textContent = "لا، ليست جملة عكسية.";
+                result.style.color = "red";
+            }
+        }
+    </script>
+
+</body>
+</html>

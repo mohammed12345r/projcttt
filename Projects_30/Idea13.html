@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <style>
+        .card {
+            width: 500px;
+            margin: 50px auto;
+        }
+        .error {
+            color: #f00;
+            display: none;
+        }
+        .valid-char {
+            border-color: #12ff12;
+            background-color: #e6ffe6;
+        }
+        .invalid-char {
+            border-color: #ff2323;
+            background-color: #ffe6e6;
+        }
+        .valid-icon {
+            color: #12ff12;
+        }
+        .invalid-icon {
+            color: #ff2323;
+        }
+        .icon {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .valid-icon::before {
+            content: '✔️';
+        }
+        .invalid-icon::before {
+            content: '❌';
+        }
+        .phone-field {
+            display: none;
+        }
+        .password-strength {
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
+        .password-strength.weak {
+            color: #ff2323;
+        }
+        .password-strength.medium {
+            color: #ffaa00;
+        }
+        .password-strength.strong {
+            color: #12ff12;
+        }
+        .profile-image-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="bg-warning">
+    <div class="container">
+        <div class="card p-5">
+            <h2 class="text-center text-primary mb-3">إنشاء حساب</h2>
+            <form action="" method="post" class="text-center" id="signupForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">أدخل الاسم الثلاثي مع اللقب</label>
+                    <input type="text" name="name" id="textInput" class="form-control">
+                    <span class="error" id="error">يجب أن يحتوي على حروف وليس أرقام</span>
+                    <span class="icon" id="name-icon"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">أدخل الإيميل</label>
+                    <input type="email" name="email" class="form-control" placeholder="@">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">أدخل كلمة السر</label>
+                    <input type="password" id="password" class="form-control">
+                    <span class="icon" id="password-icon"></span>
+                    <div id="password-error" class="error">يجب أن تحتوي كلمة السر على حروف</div>
+                    <div id="password-strength" class="password-strength"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">تأكيد كلمة السر</label>
+                    <input type="password" name="rpassword" id="rpassword" class="form-control" placeholder="******">
+                    <div class="error" id="confirm-password-error">يجب أن تكون كلمة السر مطابقة</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">اختر شركة الاتصال</label>
+                    <select id="telecomCompany" class="form-control">
+                        <option value="">-- اختر الشركة --</option>
+                        <option value="73">YOU (73)</option>
+                        <option value="77">موبايل (77)</option>
+                        <option value="78">موبايل (78)</option>
+                        <option value="71">سبأفون (71)</option>
+                    </select>
+                </div>
+                <div class="mb-3 phone-field" id="phoneField">
+                    <label class="form-label">أدخل رقم الهاتف</label>
+                    <input type="text" id="phoneNumber" class="form-control">
+                    <span class="error" id="phone-error">يجب أن يبدأ الرقم بالمقدمة الصحيحة ويتكون من 9 أرقام</span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">تاريخ الميلاد</label>
+                    <input type="date" id="birthdate" class="form-control">
+                    <div id="age-display" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">الصورة الشخصية</label>
+                    <input type="file" name="profilePicture" id="profilePicture" class="form-control">
+                    <img src="" id="preview" alt="preview picture" class="d-none">
+                    <div id="file-error" class="text-danger mt-2" style="display: none;"></div>
+                </div>
+                <input type="submit" value="إرسال" class="btn btn-warning w-50">
+            </form>
+        </div>
+    </div>
+    <script src="bootstrap.bundle.min.js"></script>
+    <script>
+        const profilePicture = document.getElementById('profilePicture');
+        const preview = document.getElementById('preview');document.getElementById('telecomCompany').addEventListener('change', function () {
+        let selectedCompany = this.value;
+        let phoneField = document.getElementById('phoneField');
+        let phoneInput = document.getElementById('phoneNumber');
+
+        if (selectedCompany !== "") {
+            phoneField.style.display = 'block';
+            phoneInput.value = selectedCompany;
+            phoneInput.focus();
+            phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+        } else {
+            phoneField.style.display = 'none';
+            phoneInput.value = "";
+        }
+    });
+
+    document.getElementById('phoneNumber').addEventListener('input', function () {
+        let phoneInput = this.value.replace(/\D/g, '');
+        let selectedCompany = document.getElementById('telecomCompany').value;
+        let error = document.getElementById('phone-error');
+
+        this.value = phoneInput;
+        let isValid = phoneInput.startsWith(selectedCompany) && phoneInput.length === 9;
+
+        if (isValid) {
+            error.style.display = 'none';
+            this.classList.add("valid-char");
+            this.classList.remove("invalid-char");
+        } else {
+            error.style.display = 'block';
+            this.classList.add("invalid-char");
+            this.classList.remove("valid-char");
+        }
+    });
+
+    document.getElementById('password').addEventListener('input', function() {
+        let password = this.value;
+        let error = document.getElementById('password-error');
+        let strengthIndicator = document.getElementById('password-strength');
+        let icon = document.getElementById('password-icon');
+
+        if (/[a-zA-Z]/.test(password)) {
+            error.style.display = 'none';
+            this.classList.add("valid-char");
+            this.classList.remove("invalid-char");
+            icon.classList.add("valid-icon");
+            icon.classList.remove("invalid-icon");
+        } else {
+            error.style.display = 'block';
+            this.classList.add("invalid-char");
+            this.classList.remove("valid-char");
+            icon.classList.add("invalid-icon");
+            icon.classList.remove("valid-icon");
+        }
+
+        if (password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[@$!%*?&]/.test(password)) {
+            strengthIndicator.textContent = "قوية";
+            strengthIndicator.className = "password-strength strong";
+        } else if (password.length >= 6) {
+            strengthIndicator.textContent = "متوسطة";
+            strengthIndicator.className = "password-strength medium";
+        } else {
+            strengthIndicator.textContent = "ضعيفة";
+            strengthIndicator.className = "password-strength weak";
+        }
+        strengthIndicator.style.display = "block";
+    });
+
+    document.getElementById('rpassword').addEventListener('input', function() {
+        let password = document.getElementById('password').value;
+        let confirmPassword = this.value;
+        let error = document.getElementById('confirm-password-error');
+
+        if (confirmPassword === password) {
+            error.style.display = 'none';
+            this.classList.add("valid-char");
+            this.classList.remove("invalid-char");
+        } else {
+            error.style.display = 'block';
+            this.classList.add("invalid-char");
+            this.classList.remove("valid-char");
+        }
+    });
+
+    document.getElementById('birthdate').addEventListener('input', function() {
+        let birthdate = new Date(this.value);
+        let today = new Date();
+        let age = today.getFullYear() - birthdate.getFullYear();
+        let monthDiff = today.getMonth() - birthdate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+            age--;
+        }
+        document.getElementById('age-display').textContent = `عمرك هو ${age} سنة`;
+    });
+
+    profilePicture.addEventListener('change', () => {
+        let file = profilePicture.files[0];
+        let errorMessage = document.getElementById('file-error');
+
+        if (file) {
+            let allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+            if (!allowedTypes.includes(file.type)) {
+                errorMessage.textContent = "❌ يُسمح فقط بصور بصيغة JPG, PNG, GIF";
+                errorMessage.style.display = "block";
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                errorMessage.textContent = "❌ حجم الصورة يجب أن يكون أقل من 2MB";
+                errorMessage.style.display = "block";
+                return;
+            }
+            errorMessage.style.display = "none";
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('textInput').addEventListener('input', function () {
+        let value = this.value;
+        let error = document.getElementById('error');
+        let icon = document.getElementById('name-icon');
+
+        if (/^[\u0600-\u06FF\s]+$/.test(value)) {
+            this.classList.add("valid-char");
+            this.classList.remove("invalid-char");
+            icon.className = "icon valid-icon";
+            error.style.display = "none";
+        } else {
+            this.classList.add("invalid-char");
+            this.classList.remove("valid-char");
+            icon.className = "icon invalid-icon";
+            error.style.display = "block";
+        }
+    });
+</script>
+
+</body>
+</html>

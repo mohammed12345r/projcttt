@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>قائمة المهام بالسحب والإفلات</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f9;
+      color: #000;
+      padding: 20px;
+      direction: rtl;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: #fff;
+    }
+
+    .dark-mode .task {
+      background-color: #2a2a2a;
+      color: #fff;
+      border-color: #555;
+    }
+
+    .dark-mode #taskInput {
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+
+    .dark-mode .delete-btn {
+      background-color: #c0392b;
+    }
+
+    .dark-mode .selected {
+      border: 2px solid #00b894;
+    }
+
+    #taskInput {
+      padding: 10px;
+      width: 60%;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      color: white;
+      background-color: #28a745;
+    }
+
+    #taskList {
+      list-style-type: none;
+      padding: 0;
+      width: 60%;
+      margin: 20px auto;
+    }
+
+    .task {
+      padding: 15px;
+      margin: 5px 0;
+      background-color: white;
+      border: 1px solid #ccc;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.3s, border 0.3s;
+    }
+
+    .dragging {
+      background-color: #d1e7fd;
+      opacity: 0.7;
+    }
+
+    .selected {
+      border: 2px solid #007bff;
+    }
+
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .toggle-mode-btn {
+      background-color: #444;
+    }
+
+    .dark-mode .toggle-mode-btn {
+      background-color: #bbb;
+      color: #000;
+    }
+
+    @media (max-width: 600px) {
+      #taskInput, #taskList {
+        width: 90%;
+      }
+
+      .task {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .delete-btn {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📝 قائمة المهام بالسحب والإفلات</h2>
+
+  <button class="toggle-mode-btn" onclick="toggleDarkMode()">🌙 تبديل الوضع الليلي</button><br><br>
+
+  <input type="text" id="taskInput" placeholder="أدخل مهمة جديدة">
+  <button id="addTask">إضافة مهمة</button>
+  <button id="deleteTask">🗑️ حذف المهمة المحددة</button>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    const taskInput = document.getElementById("taskInput");
+    const addTaskButton = document.getElementById("addTask");
+    const deleteTaskButton = document.getElementById("deleteTask");
+    const taskList = document.getElementById("taskList");
+
+    let draggedTask = null;
+    let selectedTask = null;
+
+    addTaskButton.addEventListener("click", function () {
+      const taskText = taskInput.value.trim();
+      if (taskText === "") {
+        alert("يرجى إدخال مهمة!");
+        return;
+      }
+
+      const taskItem = document.createElement("li");
+      taskItem.classList.add("task");
+      taskItem.setAttribute("draggable", "true");
+
+      const span = document.createElement("span");
+      span.textContent = taskText;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "🗑️";
+      deleteBtn.classList.add("delete-btn");
+      deleteBtn.onclick = () => taskItem.remove();
+
+      taskItem.appendChild(span);
+      taskItem.appendChild(deleteBtn);
+
+      taskItem.addEventListener("dragstart", dragStart);
+      taskItem.addEventListener("dragover", dragOver);
+      taskItem.addEventListener("drop", drop);
+      taskItem.addEventListener("dragend", dragEnd);
+
+      taskItem.addEventListener("click", function () {
+        if (selectedTask) {
+          selectedTask.classList.remove("selected");
+        }
+        selectedTask = taskItem;
+        taskItem.classList.add("selected");
+      });
+
+      taskList.appendChild(taskItem);
+      taskInput.value = "";
+    });
+
+    deleteTaskButton.addEventListener("click", function () {
+      if (selectedTask) {
+        selectedTask.remove();
+        selectedTask = null;
+      } else {
+        alert("يرجى تحديد مهمة للحذف!");
+      }
+    });
+
+    function dragStart(event) {
+      draggedTask = event.target;
+      event.target.classList.add("dragging");
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      if (event.target.classList.contains("task")) {
+        taskList.insertBefore(draggedTask, event.target.nextSibling);
+      }
+    }
+
+    function dragEnd(event) {
+      event.target.classList.remove("dragging");
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+  </script>
+
+</body>
+</html>

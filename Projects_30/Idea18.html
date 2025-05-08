@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎨 تغيير اللون</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --button-bg: #3498db;
+      --button-hover: #2980b9;
+    }
+
+    body.dark-mode {
+      --bg-color: #1c1c1c;
+      --text-color: #f0f0f0;
+      --button-bg: #444;
+      --button-hover: #222;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.5s ease, color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 90%;
+      width: 400px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      font-size: 18px;
+      padding: 12px 24px;
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin: 10px;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>اضغط على الزر لتغيير اللون!</h1>
+    <button id="colorButton">تغيير اللون</button>
+    <button id="toggleDarkMode">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    // تغيير لون الخلفية عشوائيًا
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    const colorButton = document.getElementById('colorButton');
+    const toggleDarkModeBtn = document.getElementById('toggleDarkMode');
+
+    colorButton.addEventListener('click', () => {
+      document.body.style.backgroundColor = getRandomColor();
+    });
+
+    toggleDarkModeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    // تفعيل الوضع الليلي حسب التخزين المحلي
+    window.addEventListener('DOMContentLoaded', () => {
+      const dark = localStorage.getItem('darkMode') === 'true';
+      if (dark) document.body.classList.add('dark-mode');
+    });
+  </script>
+</body>
+</html>

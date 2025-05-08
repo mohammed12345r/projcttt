@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>صفحة متعددة الأقسام</title>
+  <style>
+    /* تنسيق أساسي للصفحة */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.5s ease-in-out;
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      padding-top: 80px; /* مسافة لعدم تغطية المحتوى بالأزرار */
+    }
+
+    /* أزرار التنقل */
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      border-radius: 5px;
+      transition: 0.3s;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* تنسيق الأقسام */
+    .section {
+      display: none;
+      max-width: 90%;
+      margin: auto;
+      padding: 20px;
+      background-color: rgba(0,0,0,0.4);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* استجابة للشاشات الصغيرة */
+    @media (max-width: 768px) {
+      body {
+        padding-top: 120px;
+      }
+
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      button {
+        width: 80%;
+        font-size: 14px;
+      }
+
+      .section {
+        font-size: 16px;
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      button {
+        font-size: 13px;
+        padding: 8px 16px;
+      }
+
+      .section h1 {
+        font-size: 20px;
+      }
+
+      .section p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- أزرار التنقل -->
+  <nav>
+    <button onclick="showSection('home', 0)">الصفحة الرئيسية</button>
+    <button onclick="showSection('about', 1)">من نحن</button>
+    <button onclick="showSection('contact', 2)">اتصل بنا</button>
+  </nav>
+
+  <!-- الأقسام -->
+  <section id="home" class="section active">
+    <h1>مرحبًا بك في الصفحة الرئيسية</h1>
+  </section>
+
+  <section id="about" class="section">
+    <h1>من نحن</h1>
+    <p>معلومات عن الموقع أو الشركة.</p>
+  </section>
+
+  <section id="contact" class="section">
+    <h1>اتصل بنا</h1>
+    <p>تفاصيل الاتصال الخاصة بك.</p>
+  </section>
+
+  <script>
+    // قائمة الصور لكل قسم
+    const backgrounds = [
+      "../images/image1.jpeg",
+      "../images/image2.jpeg",
+      "../images/image3.jpeg",
+    ];
+
+    // تحميل الصور مسبقًا
+    const preloadedImages = [];
+    backgrounds.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      preloadedImages.push(img);
+    });
+
+    // دالة لتغيير القسم والخلفية
+    function showSection(sectionId, bgIndex) {
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
+      document.body.style.backgroundImage = `url('${backgrounds[bgIndex]}')`;
+    }
+
+    // الخلفية المبدئية
+    document.body.style.backgroundImage = `url('${backgrounds[0]}')`;
+  </script>
+</body>
+</html>

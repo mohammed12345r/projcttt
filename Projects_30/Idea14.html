@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ساعة توقيت مع اللفات</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 10px;
+      background-color: #f4f4f4;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 100%;
+      width: 300px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #display {
+      font-size: 2em;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .buttons button, #toggleMode {
+      flex: 1 1 80px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      min-width: 80px;
+      transition: background-color 0.3s;
+    }
+
+    #startStop { background-color: #28a745; color: white; }
+    #lap { background-color: #007bff; color: white; }
+    #reset { background-color: #dc3545; color: white; }
+    #toggleMode { background-color: #6c757d; color: white; }
+
+    #laps {
+      list-style: none;
+      padding: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+
+    #laps li {
+      background: #ddd;
+      padding: 5px;
+      margin: 5px;
+      border-radius: 5px;
+      text-align: right;
+    }
+
+    /* الوضع الليلي */
+    .dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+
+    .dark-mode .container {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-mode #laps li {
+      background: #333;
+    }
+
+    @media (max-width: 350px) {
+      #display {
+        font-size: 1.5em;
+      }
+      .buttons button, #toggleMode {
+        font-size: 0.9em;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⏱️ ساعة التوقيت</h1>
+    <div id="display">00:00:00</div>
+    <div class="buttons">
+      <button id="startStop">ابدأ</button>
+      <button id="lap" disabled>لفة</button>
+      <button id="reset" disabled>إعادة ضبط</button>
+    </div>
+    <button id="toggleMode">تبديل الوضع</button>
+    <ul id="laps"></ul>
+  </div>
+
+  <script>
+    let timer, running = false, startTime, elapsedTime = 0, laps = [];
+
+    const display = document.getElementById("display");
+    const startStopButton = document.getElementById("startStop");
+    const lapButton = document.getElementById("lap");
+    const resetButton = document.getElementById("reset");
+    const toggleMode = document.getElementById("toggleMode");
+    const lapsList = document.getElementById("laps");
+
+    function formatTime(ms) {
+      let totalSeconds = Math.floor(ms / 1000);
+      let minutes = Math.floor(totalSeconds / 60);
+      let seconds = totalSeconds % 60;
+      let milliseconds = Math.floor((ms % 1000) / 10);
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      const currentTime = Date.now() - startTime + elapsedTime;
+      display.textContent = formatTime(currentTime);
+    }
+
+    startStopButton.addEventListener("click", () => {
+      if (running) {
+        clearInterval(timer);
+        elapsedTime += Date.now() - startTime;
+        startStopButton.textContent = "ابدأ";
+        lapButton.disabled = true;
+        resetButton.disabled = false;
+      } else {
+        startTime = Date.now();
+        timer = setInterval(updateDisplay, 10);
+        startStopButton.textContent = "إيقاف";
+        lapButton.disabled = false;
+        resetButton.disabled = true;
+      }
+      running = !running;
+    });
+
+    lapButton.addEventListener("click", () => {
+      if (!running) return;
+      let currentTime = Date.now() - startTime + elapsedTime;
+      laps.push(currentTime);
+      let lapItem = document.createElement("li");
+      lapItem.textContent = `لفة ${laps.length}: ${formatTime(currentTime)}`;
+      lapsList.appendChild(lapItem);
+    });
+
+    resetButton.addEventListener("click", () => {
+      clearInterval(timer);
+      running = false;
+      elapsedTime = 0;
+      laps = [];
+      display.textContent = "00:00:00";
+      lapsList.innerHTML = "";
+      startStopButton.textContent = "ابدأ";
+      lapButton.disabled = true;
+      resetButton.disabled = true;
+    });
+
+    // الوضع الليلي
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    }
+
+    toggleMode.addEventListener("click", toggleDarkMode);
+
+    // تحميل الوضع من localStorage
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
+  </script>
+</body>
+</html>

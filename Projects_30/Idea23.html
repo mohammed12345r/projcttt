@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🧮 آلة حاسبة بسيطة</title>
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --calc-bg: #fff;
+      --btn-bg: #e0e0e0;
+      --btn-hover: #d4d4d4;
+      --func-btn: #3498db;
+      --func-hover: #2980b9;
+      --display-bg: #f9f9f9;
+    }
+
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --calc-bg: #2b2b2b;
+      --btn-bg: #444;
+      --btn-hover: #555;
+      --func-btn: #555;
+      --func-hover: #777;
+      --display-bg: #333;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .calculator {
+      background: var(--calc-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 320px;
+      box-sizing: border-box;
+    }
+
+    #display {
+      width: 100%;
+      padding: 15px;
+      font-size: 20px;
+      text-align: right;
+      border: none;
+      background: var(--display-bg);
+      margin-bottom: 10px;
+      border-radius: 5px;
+      color: var(--text-color);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      background-color: var(--btn-bg);
+      transition: background-color 0.3s;
+      color: var(--text-color);
+    }
+
+    button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .zero {
+      grid-column: span 2;
+    }
+
+    .func {
+      background-color: var(--func-btn);
+      color: white;
+    }
+
+    .func:hover {
+      background-color: var(--func-hover);
+    }
+
+    #toggleMode {
+      margin-top: 15px;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      background-color: var(--func-btn);
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #toggleMode:hover {
+      background-color: var(--func-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <h2>آلة حاسبة</h2>
+    <input type="text" id="display" disabled />
+    <div class="buttons">
+      <button onclick="clearDisplay()" class="func">C</button>
+      <button onclick="appendToDisplay('/')" class="func">÷</button>
+      <button onclick="appendToDisplay('*')" class="func">×</button>
+      <button onclick="backspace()" class="func">⌫</button>
+
+      <button onclick="appendToDisplay('7')">7</button>
+      <button onclick="appendToDisplay('8')">8</button>
+      <button onclick="appendToDisplay('9')">9</button>
+      <button onclick="appendToDisplay('-')" class="func">-</button>
+
+      <button onclick="appendToDisplay('4')">4</button>
+      <button onclick="appendToDisplay('5')">5</button>
+      <button onclick="appendToDisplay('6')">6</button>
+      <button onclick="appendToDisplay('+')" class="func">+</button>
+
+      <button onclick="appendToDisplay('1')">1</button>
+      <button onclick="appendToDisplay('2')">2</button>
+      <button onclick="appendToDisplay('3')">3</button>
+      <button onclick="calculateResult()" class="func">=</button>
+
+      <button onclick="appendToDisplay('0')" class="zero">0</button>
+      <button onclick="appendToDisplay('.')">.</button>
+    </div>
+
+    <button id="toggleMode">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+    const toggleMode = document.getElementById("toggleMode");
+
+    // حفظ واستعادة الوضع الليلي
+    window.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("dark-mode") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+    });
+
+    toggleMode.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("dark-mode", document.body.classList.contains("dark-mode"));
+    });
+
+    function appendToDisplay(value) {
+      display.value += value;
+    }
+
+    function clearDisplay() {
+      display.value = "";
+    }
+
+    function backspace() {
+      display.value = display.value.slice(0, -1);
+    }
+
+    function calculateResult() {
+      try {
+        display.value = eval(display.value);
+      } catch {
+        display.value = "خطأ";
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>✊ لعبة حجر-ورقة-مقص</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    h2, h3 {
+      color: #2c3e50;
+    }
+
+    .choice {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 5px;
+      background-color: #3498db;
+      color: white;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    p {
+      font-size: 18px;
+      color: #34495e;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    #toggleDarkMode {
+      background-color: #555;
+      margin-top: 15px;
+    }
+
+    /* الوضع الليلي */
+    .dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+
+    .dark-mode .container {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+    }
+
+    .dark-mode button {
+      background-color: #2980b9;
+    }
+
+    .dark-mode button:hover {
+      background-color: #1c6ea4;
+    }
+
+    .dark-mode p {
+      color: #ccc;
+    }
+
+    .dark-mode h2, .dark-mode h3 {
+      color: #f0f0f0;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      button {
+        font-size: 16px;
+        padding: 8px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>✊ لعبة حجر-ورقة-مقص</h2>
+
+    <div class="choice">
+      <button onclick="playGame('rock')">حجر</button>
+      <button onclick="playGame('paper')">ورقة</button>
+      <button onclick="playGame('scissors')">مقص</button>
+    </div>
+
+    <div id="result"></div>
+
+    <h3>النتيجة:</h3>
+    <p id="playerChoice">اختيارك: </p>
+    <p id="computerChoice">اختيار الكمبيوتر: </p>
+    <p id="gameResult">النتيجة النهائية: </p>
+
+    <button id="toggleDarkMode" onclick="toggleDarkMode()">تبديل الوضع الليلي</button>
+  </div>
+
+  <script>
+    function playGame(playerChoice) {
+      const choices = ['rock', 'paper', 'scissors'];
+      const computerChoice = choices[Math.floor(Math.random() * 3)];
+      let result = '';
+
+      if (playerChoice === computerChoice) {
+        result = "التعادل!";
+      } else if (
+        (playerChoice === 'rock' && computerChoice === 'scissors') ||
+        (playerChoice === 'paper' && computerChoice === 'rock') ||
+        (playerChoice === 'scissors' && computerChoice === 'paper')
+      ) {
+        result = "أنت فزت!";
+      } else {
+        result = "الكمبيوتر فاز!";
+      }
+
+      document.getElementById("playerChoice").innerText = `اختيارك: ${translateChoice(playerChoice)}`;
+      document.getElementById("computerChoice").innerText = `اختيار الكمبيوتر: ${translateChoice(computerChoice)}`;
+      document.getElementById("gameResult").innerText = `النتيجة النهائية: ${result}`;
+    }
+
+    function translateChoice(choice) {
+      switch (choice) {
+        case 'rock': return 'حجر';
+        case 'paper': return 'ورقة';
+        case 'scissors': return 'مقص';
+        default: return '';
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("darkMode", isDark ? "on" : "off");
+    }
+
+    // تفعيل الوضع الليلي إذا كان محفوظًا
+    window.onload = () => {
+      if (localStorage.getItem("darkMode") === "on") {
+        document.body.classList.add("dark-mode");
+      }
+    };
+  </script>
+
+</body>
+</html>

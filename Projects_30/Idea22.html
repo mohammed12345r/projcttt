@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌤️ تطبيق الطقس</title>
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --container-bg: #fff;
+      --button-bg: #3498db;
+      --button-hover: #2980b9;
+      --input-bg: #fff;
+    }
+
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --container-bg: #2b2b2b;
+      --button-bg: #555;
+      --button-hover: #777;
+      --input-bg: #444;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .weather-container {
+      background: var(--container-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    .weather-result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .forecast {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .forecast-day {
+      margin-top: 15px;
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+
+    @media (max-width: 480px) {
+      .forecast-day h3 {
+        font-size: 16px;
+      }
+
+      .forecast-day p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="weather-container">
+    <h1>تطبيق الطقس</h1>
+    <input type="text" id="cityInput" placeholder="أدخل اسم المدينة" />
+    <button id="getWeatherButton">احصل على الطقس</button>
+    <button id="toggleMode">تبديل الوضع الليلي</button>
+    <div id="weatherResult" class="weather-result"></div>
+  </div>
+
+  <script>
+    const cityInput = document.getElementById("cityInput");
+    const getWeatherButton = document.getElementById("getWeatherButton");
+    const toggleMode = document.getElementById("toggleMode");
+    const weatherResult = document.getElementById("weatherResult");
+    const apiKey = "c01490b25b52db59d8a4b160257da226"; // استبدل بمفتاحك
+
+    // تحميل الوضع المحفوظ
+    window.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("dark-mode") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+    });
+
+    toggleMode.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("dark-mode", document.body.classList.contains("dark-mode"));
+    });
+
+    getWeatherButton.addEventListener("click", getWeather);
+
+    function getWeather() {
+      const city = encodeURIComponent(cityInput.value.trim());
+
+      if (!city) {
+        weatherResult.innerHTML = "<p>يرجى إدخال اسم المدينة.</p>";
+        return;
+      }
+
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=ar`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.cod !== 200) {
+            weatherResult.innerHTML = `<p>لم يتم العثور على بيانات الطقس لمدينة ${cityInput.value.trim()}.</p>`;
+          } else {
+            const temperature = data.main.temp;
+            const description = data.weather[0].description;
+            const humidity = data.main.humidity;
+            const windSpeed = data.wind.speed;
+
+            weatherResult.innerHTML = `
+              <h2>${data.name}</h2>
+              <p>درجة الحرارة: ${temperature}°C</p>
+              <p>الوصف: ${description}</p>
+              <p>الرطوبة: ${humidity}%</p>
+              <p>سرعة الرياح: ${windSpeed} م/ث</p>
+            `;
+
+            getWeatherForecast(city);
+          }
+        })
+        .catch(() => {
+          weatherResult.innerHTML = "<p>حدث خطأ أثناء جلب بيانات الطقس.</p>";
+        });
+    }
+
+    function getWeatherForecast(city) {
+      const forecastApiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=ar`;
+
+      fetch(forecastApiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.cod !== "200") {
+            weatherResult.innerHTML += "<p>تعذر جلب التوقعات.</p>";
+          } else {
+            const forecast = data.list.filter((_, index) => index % 8 === 0).slice(0, 5);
+
+            let forecastHTML = '<h3>توقعات الأيام القادمة</h3><div class="forecast">';
+            forecast.forEach(day => {
+              const date = new Date(day.dt * 1000);
+              const dayName = date.toLocaleDateString('ar-EG', { weekday: 'long' });
+              const temp = day.main.temp;
+              const description = day.weather[0].description;
+              const icon = day.weather[0].icon;
+
+              forecastHTML += `
+                <div class="forecast-day">
+                  <h3>${dayName}</h3>
+                  <img src="http://openweathermap.org/img/wn/${icon}.png" alt="${description}" />
+                  <p>درجة الحرارة: ${temp}°C</p>
+                  <p>${description}</p>
+                </div>
+              `;
+            });
+            forecastHTML += '</div>';
+            weatherResult.innerHTML += forecastHTML;
+          }
+        })
+        .catch(() => {
+          weatherResult.innerHTML += "<p>حدث خطأ أثناء جلب التوقعات.</p>";
+        });
+    }
+  </script>
+</body>
+</html>

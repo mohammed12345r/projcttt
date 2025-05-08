@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الرسم المتقدم</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            font-size: 24px;
+            padding: 20px 0;
+        }
+        #controls {
+            margin: 10px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        label {
+            margin: 5px;
+        }
+        #canvas {
+            border: 2px solid #000;
+            margin: 10px auto;
+            display: block;
+            max-width: 95%;
+            height: auto;
+            touch-action: none; /* مهم لمنع التمرير أثناء اللمس */
+        }
+        #clearButton, #saveButton {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #clearButton:hover, #saveButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>تطبيق الرسم المتقدم</h1>
+
+    <div id="controls">
+        <label for="colorPicker">اختيار اللون:</label>
+        <input type="color" id="colorPicker" value="#000000">
+
+        <label for="brushSize">حجم الفرشاة:</label>
+        <input type="range" id="brushSize" min="1" max="20" value="5">
+
+        <label for="shapeSelect">اختيار الأداة:</label>
+        <select id="shapeSelect">
+            <option value="line">خط</option>
+            <option value="circle">دائرة</option>
+            <option value="square">مربع</option>
+        </select>
+    </div>
+
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <br>
+    <button id="clearButton" onclick="clearCanvas()">مسح اللوحة</button>
+    <button id="saveButton" onclick="saveCanvas()">حفظ الصورة</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const brushSize = document.getElementById('brushSize');
+        const shapeSelect = document.getElementById('shapeSelect');
+
+        let drawing = false;
+        let lastX = 0, lastY = 0;
+
+        let currentColor = colorPicker.value;
+        let currentBrushSize = brushSize.value;
+        let currentShape = shapeSelect.value;
+
+        colorPicker.addEventListener('input', (e) => currentColor = e.target.value);
+        brushSize.addEventListener('input', (e) => currentBrushSize = e.target.value);
+        shapeSelect.addEventListener('change', (e) => currentShape = e.target.value);
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches) {
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top
+                };
+            } else {
+                return {
+                    x: e.offsetX,
+                    y: e.offsetY
+                };
+            }
+        }
+
+        function startDraw(e) {
+            e.preventDefault();
+            drawing = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+
+            ctx.beginPath();
+            ctx.lineWidth = currentBrushSize;
+            ctx.strokeStyle = currentColor;
+            ctx.fillStyle = currentColor;
+
+            if (currentShape === 'line') {
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            } else if (currentShape === 'circle') {
+                const radius = currentBrushSize / 2;
+                ctx.arc(lastX, lastY, radius, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (currentShape === 'square') {
+                const size = currentBrushSize;
+                ctx.fillRect(lastX - size / 2, lastY - size / 2, size, size);
+            }
+
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function stopDraw(e) {
+            e.preventDefault();
+            drawing = false;
+        }
+
+        // دعم الفأرة
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mouseleave', stopDraw);
+
+        // دعم اللمس
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDraw);
+        canvas.addEventListener('touchcancel', stopDraw);
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function saveCanvas() {
+            const dataURL = canvas.toDataURL();
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'drawing.png';
+            link.click();
+        }
+    </script>
+</body>
+</html>
