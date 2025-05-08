@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مشروع 30 أداة</title>
+  <link rel="stylesheet" href="font/css/all.min.css">
+
+  <style>
+    body {
+      height: 4000px;
+      direction: rtl;
+      font-family: Arial, sans-serif;
+      transition: background-color 1s;
+    }
+
+    .welcome {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(45deg, tomato, gold);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 1s;
+    }
+
+    .welcome.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .projects-background {
+      background: linear-gradient(45deg, #222, sienna);
+      color: white;
+    }
+
+    #btn {
+      background-color: tomato;
+      text-transform: uppercase;
+      padding: 5px;
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border: none;
+    }
+
+    #parent {
+      margin-top: 10rem;
+    }
+
+    #parent #par {
+      background-color: cyan;
+      width: 200px;
+    }
+
+    #parent #par2 {
+      background-color: sienna;
+      width: 200px;
+      position: absolute;
+      right: 0;
+      top: 10rem;
+    }
+
+    #parent img {
+      width: 300px;
+      height: 300px;
+      position: absolute;
+      left: 30rem;
+    }
+
+    .parent {
+      opacity: 0;
+      transition: 1s;
+    }
+
+    #content {
+      background-color: #222;
+      color: sienna;
+      font-size: 20px;
+      text-align: center;
+      display: inline-block;
+      position: absolute;
+      top: 3rem;
+      left: 30rem;
+    }
+
+    .content {
+      transform: translate(0, -500%);
+      transition: 1s;
+      scale: 1.1 1.1;
+    }
+
+    .x {
+      position: absolute;
+      top: 50rem;
+    }
+
+    .x img {
+      width: 250px;
+      height: 250px;
+    }
+
+    .x .x1 {
+      position: absolute;
+      right: 20rem;
+      top: 20rem;
+      left: 0;
+    }
+
+    .x .x2 {
+      position: absolute;
+      right: 0;
+      top: 20rem;
+      left: 78rem;
+    }
+
+    .x3 {
+      transform: translateX(-150%);
+      transition: 1s;
+    }
+
+    .x4 {
+      transform: translate(+150%);
+      transition: 1s;
+    }
+
+    .projects {
+      text-align: center;
+      margin-top: 2000px;
+      transition: 1s;
+      opacity: 1;
+    }
+
+    .projects ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 0;
+    }
+
+    .projects ul li a {
+      font-size: 24px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .projects ul li:nth-child(1) a  { color: #e74c3c; }
+    .projects ul li:nth-child(2) a  { color: #8e44ad; }
+    .projects ul li:nth-child(3) a  { color: #3498db; }
+    .projects ul li:nth-child(4) a  { color: #1abc9c; }
+    .projects ul li:nth-child(5) a  { color: #f39c12; }
+    .projects ul li:nth-child(6) a  { color: #2ecc71; }
+    .projects ul li:nth-child(7) a  { color: #16a085; }
+    .projects ul li:nth-child(8) a  { color: #f1c40f; }
+    .projects ul li:nth-child(9) a  { color: #d35400; }
+    .projects ul li:nth-child(10) a { color: #2980b9; }
+    .projects ul li:nth-child(11) a { color: #e67e22; }
+    .projects ul li:nth-child(12) a { color: #c0392b; }
+    .projects ul li:nth-child(13) a { color: #7f8c8d; }
+    .projects ul li:nth-child(14) a { color: #9b59b6; }
+    .projects ul li:nth-child(15) a { color: #34495e; }
+    .projects ul li:nth-child(16) a { color: #2c3e50; }
+    .projects ul li:nth-child(17) a { color: #27ae60; }
+    .projects ul li:nth-child(18) a { color: #e84393; }
+    .projects ul li:nth-child(19) a { color: #00cec9; }
+    .projects ul li:nth-child(20) a { color: #6c5ce7; }
+    .projects ul li:nth-child(21) a { color: #a29bfe; }
+    .projects ul li:nth-child(22) a { color: #ffeaa7; }
+    .projects ul li:nth-child(23) a { color: #fd79a8; }
+    .projects ul li:nth-child(24) a { color: #fab1a0; }
+    .projects ul li:nth-child(25) a { color: #55efc4; }
+    .projects ul li:nth-child(26) a { color: #81ecec; }
+    .projects ul li:nth-child(27) a { color: #636e72; }
+    .projects ul li:nth-child(28) a { color: #dfe6e9; }
+    .projects ul li:nth-child(29) a { color: #b2bec3; }
+    .projects ul li:nth-child(30) a { color: #0984e3; }
+
+    .projects.hidden {
+      opacity: 0;
+      transform: translateY(100px);
+    }
+
+    .projects marquee {
+      margin-top: 20px;
+      color: #000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة ترحيب -->
+  <div id="welcome" class="welcome">
+    <h1>مرحبًا بك في مشروع 30 فكرة تصميم الطالب محمد فيصل الفهيدي </h1>
+  </div>
+
+  <p id="content" class="content">الاسكرول الاختفاء بعد قليل</p>
+
+  <div id="parent" class="parent">
+    <h3 id="par">Lorem ipsum dolor sit amet...</h3>
+    <p id="par2">Lorem ipsum dolor sit amet...</p>
+    <img src="images/04.jpg" alt="">
+  </div>
+
+  <div class="x">
+    <img src="images/05.jpg" alt="" class="x1 x3">
+    <img src="images/06.jpg" alt="" class="x2 x4">
+  </div>
+
+  <div id="projectsSection" class="projects hidden">
+    <ul>
+      <!-- الأيقونات (كما في كودك الأصلي) -->
+      <li><a href="Projects_30/Idea1.html" target="_blank"><i class="fas fa-hourglass-start" title="مؤقت برمودا"></i></a></li>
+      <li><a href="Projects_30/Idea2.html" target="_blank"><i class="fas fa-pen-fancy" title="عداد الحروف"></i></a></li>
+      <li><a href="Projects_30/Idea3.html" target="_blank"><i class="fas fa-quote-left" title="مولد الاقتباسات"></i></a></li>
+      <li><a href="Projects_30/Idea4.html" target="_blank"><i class="fas fa-dice" title="لعبة النرد"></i></a></li>
+      <li><a href="Projects_30/Idea5.html" target="_blank"><i class="fas fa-weight" title="حساب كتلة الجسم"></i></a></li>
+      <li><a href="Projects_30/Idea6.html" target="_blank"><i class="fas fa-hourglass-end" title="مؤقت تنازلي"></i></a></li>
+      <li><a href="Projects_30/Idea7.html" target="_blank"><i class="fas fa-key" title="مولد كلمة مرور"></i></a></li>
+      <li><a href="Projects_30/Idea8.html" target="_blank"><i class="fas fa-tasks" title="قائمة مهام (سحب)"></i></a></li>
+      <li><a href="Projects_30/Idea9.html" target="_blank"><i class="fas fa-volume-up" title="تحويل نص إلى صوت"></i></a></li>
+      <li><a href="Projects_30/Idea10.html" target="_blank"><i class="fas fa-random" title="الجملة العكسية"></i></a></li>
+      <li><a href="Projects_30/Idea11.html" target="_blank"><i class="fas fa-paint-brush" title="تطبيق الرسم"></i></a></li>
+      <li><a href="Projects_30/Idea12.html" target="_blank"><i class="fas fa-arrow-right-arrow-left" title="أزرار تنقل"></i></a></li>
+      <li><a href="Projects_30/Idea13.html" target="_blank"><i class="fas fa-user-plus" title="تسجيل حساب"></i></a></li>
+      <li><a href="Projects_30/Idea14.html" target="_blank"><i class="fas fa-stopwatch" title="ساعة توقيت"></i></a></li>
+      <li><a href="Projects_30/Idea15.html" target="_blank"><i class="fas fa-temperature-high" title="محول حرارة"></i></a></li>
+      <li><a href="Projects_30/Idea16.html" target="_blank"><i class="fas fa-list-check" title="قائمة مهام"></i></a></li>
+      <li><a href="Projects_30/Idea17.html" target="_blank"><i class="fas fa-clock" title="ساعة الآن"></i></a></li>
+      <li><a href="Projects_30/Idea18.html" target="_blank"><i class="fas fa-palette" title="تغيير اللون"></i></a></li>
+      <li><a href="Projects_30/Idea19.html" target="_blank"><i class="fas fa-hand-holding-usd" title="حساب البقشيش"></i></a></li>
+      <li><a href="Projects_30/Idea20.html" target="_blank"><i class="fas fa-i-cursor" title="عدد الكلمات"></i></a></li>
+      <li><a href="Projects_30/Idea21.html"target="_blank"><i class="fas fa-check-double" title="اختبار"></i></a></li>
+      <li><a href="Projects_30/Idea22.html" target="_blank"><i class="fas fa-cloud-sun" title="الطقس"></i></a></li>
+      <li><a href="Projects_30/Idea23.html" target="_blank"><i class="fas fa-calculator" title="آلة حاسبة"></i></a></li>
+      <li><a href="Projects_30/Idea24.html"target="_blank"><i class="fas fa-images" title="سلايد صور"></i></a></li>
+      <li><a href="Projects_30/Idea25.html" target="_blank"><i class="fas fa-stopwatch-20" title="ساعة إيقاف"></i></a></li>
+      <li><a href="Projects_30/Idea26.html" target="_blank"><i class="fas fa-dollar-sign" title="محول عملات"></i></a></li>
+      <li><a href="Projects_30/Idea27.html"target="_blank"><i class="fas fa-wallet" title="نفقات"></i></a></li>
+      <li><a href="Projects_30/Idea28.html" target="_blank"><i class="fas fa-sticky-note" title="ملاحظات"></i></a></li>
+      <li><a href="Projects_30/Idea29.html" target="_blank"><i class="fas fa-hand-rock" title="حجر ورقة مقص"></i></a></li>
+      <li><a href="Projects_30/Idea30.html" target="_blank"><i class="fas fa-brain" title="لعبة الذاكرة"></i></a></li>
+    </ul>
+    <marquee direction="right" onmouseover="this.stop()" onmouseout="this.start()">
+      اهلا فيكم في موقع من تصميم طالب محمد الفهيدي قسم تقنة المعلومات
+    </marquee>
+  </div>
+
+  <button id="btn">up</button>
+
+  <script>
+    const btn = document.getElementById('btn');
+    const parent = document.getElementById('parent');
+    const content1 = document.getElementById('content');
+    const x1 = document.getElementsByClassName('x3')[0];
+    const x2 = document.getElementsByClassName('x4')[0];
+    const projects = document.getElementById('projectsSection');
+    const welcome = document.getElementById('welcome');
+
+    window.addEventListener('scroll', function () {
+      btn.style.display = this.scrollY > 500 ? 'block' : 'none';
+      parent.classList.toggle('parent', scrollY <= 60);
+      content1.classList.toggle('content', scrollY <= 1);
+      x1.classList.toggle('x3', scrollY <= 750);
+      x2.classList.toggle('x4', scrollY <= 750);
+      projects.classList.toggle('hidden', scrollY < 1500);
+
+      // إخفاء شاشة الترحيب
+      if (scrollY > 50) {
+        welcome.classList.add('hidden');
+      }
+
+      // تفعيل الخلفية عند قسم المشاريع
+      if (scrollY >= projects.offsetTop - 300) {
+        document.body.classList.add('projects-background');
+      } else {
+        document.body.classList.remove('projects-background');
+      }
+    });
+
+    btn.onclick = function () {
+      scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  </script>
+</body>
+</html>
